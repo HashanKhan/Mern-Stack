@@ -29,9 +29,18 @@ router.post('/', (req, res) => {
 // @route DELETE api/books/:id
 // @desc Remove a Book
 // @access Public
-router.delete('/:id', (req, res) => {
-    Book.findById(req.params.id).then(book => book.remove().then(() => res.json({success: true})))
-        .catch(err => res.status(404).json({success: false}));
+router.delete('/:id', function(req, res, next) {
+    Book.findByIdAndRemove(req.params.id, req.body, function (err, post) {
+        if (err) return next(err);
+        res.json(post);
+    });
+});
+
+// @route GET api/books/:author
+// @desc Get all books of the particular author.
+// @access Public
+router.get('/:author', (req, res) => {
+    Book.find({author: req.params.author}).then(books => res.json(books));
 });
 
 module.exports = router;
